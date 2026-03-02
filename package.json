@@ -8,6 +8,9 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.3.8",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongodb": "^7.1.0",
     "react": "^19.2.4",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.4",
@@ -16,8 +19,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "json-server": "json-server --watch db.json --port 5000",
-    "dev": "concurrently \"npm start\" \"npm run json-server\"",
+    "server": "node server.js",
+    "seed:mongo": "node seed-mongodb.js",
+    "dev": "concurrently \"npm start\" \"npm run server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -41,7 +45,6 @@
     ]
   },
   "devDependencies": {
-    "concurrently": "^9.2.1",
-    "json-server": "^1.0.0-beta.5"
+    "concurrently": "^9.2.1"
   }
 }

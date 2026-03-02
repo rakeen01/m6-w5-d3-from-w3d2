@@ -7,7 +7,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
+      loading: true,
       alldata: [],
       singledata: {
         title: "",
@@ -15,7 +15,14 @@ class App extends React.Component {
       }
     };
   }
+
+  componentDidMount() {
+    this.getLists();
+  }
+
   getLists = () => {
+    this.setState({ loading: true });
+
     fetch("http://localhost:5000/posts")
       .then(res => res.json())
       .then(result =>
@@ -24,7 +31,10 @@ class App extends React.Component {
           alldata: result
         })
       )
-      .catch(console.log);
+      .catch(error => {
+        console.log(error);
+        this.setState({ loading: false });
+      });
   }
   handleChange = (e) => {
     let title = this.state.singledata.title;
@@ -49,9 +59,8 @@ class App extends React.Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        id: this.state.alldata.length ? (this.state.alldata.length + 1).toString() : "0",
         title: this.state.singledata.title,
-        author: this.state.singledata.author,
+        author: this.state.singledata.author
       })
     })
       .then(result => {
@@ -65,27 +74,19 @@ class App extends React.Component {
       })
       .catch(console.log);
   }
-  getList = (evt, id) => {
-    this.setState(
-      {
-        singledata: {
-          title: "Loading...",
-          author: "Loading..."
-        }
-      },
-      () => {
-        fetch(`http://localhost:5000/posts/${id}`)
-          .then(res => res.json())
-          .then(result => {
-            this.setState({
-              singledata: {
-                title: result.title,
-                author: result.author ? result.author : ""
-              }
-            });
-          });
-        this.getLists();
-      });
+  getList = (_evt, id) => {
+    const selectedList = this.state.alldata.find(item => item.id === id);
+
+    if (!selectedList) {
+      return;
+    }
+
+    this.setState({
+      singledata: {
+        title: selectedList.title,
+        author: selectedList.author ? selectedList.author : ""
+      }
+    });
   }
   updateList = (evt, id) => {
     fetch(`http://localhost:5000/posts/${id}`, {
@@ -137,17 +138,15 @@ class App extends React.Component {
       />
     );
     return (
-      <div className="container" >
-        <span className="title-bar">
-          <button type="button" className="btn btn-primary" onClick={this.getLists}>
-            Get Lists
-          </button>
+      <div className="container py-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h1 className="h3 mb-0">Book List</h1>
           <CreateList
             singledata={this.state.singledata}
             handleChange={this.handleChange}
             createList={this.createList}
           />
-        </span>
+        </div>
         {listTable}
       </div>
     );
